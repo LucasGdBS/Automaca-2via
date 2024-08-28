@@ -3,6 +3,8 @@ from decouple import config
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from a_selenium_get_source_from_all_frames import get_sourcecode_from_all_frames
+from bs4 import BeautifulSoup
 from time import sleep
 
 
@@ -38,7 +40,7 @@ class Bot:
 		self.driver.delete_all_cookies()
 		self.driver.maximize_window()
 		self.driver.implicitly_wait(10)
-		self.wait = WebDriverWait(self.driver, 20)
+		self.wait = WebDriverWait(self.driver, 5)
 	
 	def login(self):
 		self.init_driver()
@@ -78,14 +80,32 @@ class Bot:
 		self.driver.get('https://servicos.neoenergiapernambuco.com.br/servicos-ao-cliente/Pages/2-via-conta_anti.aspx')
 	
 	def download_pdf(self):
-		sleep(8)
-		element = self.driver.execute_script('return document.querySelector("img.tipViaPgto[onclick*=\'escolher_motivo\']")')
+		self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, 'iframe')))
+		iframe = self.driver.find_element(By.CSS_SELECTOR, "div#ctl00_m_g_df32160e_0cad_4a26_927a_6186cce39149 iframe")
 
 
-		# self.wait.until(EC.visibility_of_all_elements_located((By.TAG_NAME, 'tr')))
+		print(iframe)
+		self.driver.switch_to.frame(iframe)
+		img_element = self.wait.until(
+    		EC.presence_of_element_located((By.CSS_SELECTOR, "img.tipViaPgto"))
+		)
+		img_element.click()
+		self.driver.switch_to.default_content()
+
+		# Troca de aba
+		tabs = self.driver.window_handles
+		self.driver.switch_to.window(tabs[-1])
+
+		# self.wait.until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'neoNNtab00')))
 		# trs = self.driver.find_elements(By.TAG_NAME, 'tr')
-		# trs[-1].find_element(By.TAG_NAME, 'input').click()
-		sleep(10)
+		# for tr in trs:
+		# 	print(tr.text)
+		input_element = WebDriverWait(self.driver, 10).until(
+    		EC.element_to_be_clickable((By.XPATH, "//table[@class='neoNNtab00']//tr[last()]/td/input[@id='btn_naofaturamao']"))
+		)
+		input_element.click()
+		# trs[-1].find_element(By.CSS_SELECTOR, "td > input#btn_naofaturamao").click()
+		pass
 		
 	def second_bill_copy(self):
 		self.login()
