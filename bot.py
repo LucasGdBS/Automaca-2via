@@ -3,9 +3,13 @@ from decouple import config
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from a_selenium_get_source_from_all_frames import get_sourcecode_from_all_frames
-from bs4 import BeautifulSoup
 from time import sleep
+import os
+
+project_directory = os.path.dirname(os.path.abspath(__file__))
+download_directory = os.path.join(project_directory, "downloads")
+
+os.makedirs(download_directory, exist_ok=True)
 
 
 class Bot:
@@ -24,6 +28,11 @@ class Bot:
         {
             "credentials_enable_service": False,
             "profile.password_manager_enabled": False,
+						
+			"download.default_directory": download_directory,
+			"download.prompt_for_download": False,
+			"download.directory_upgrade": True,
+    		"plugins.always_open_pdf_externally": True
         },
     )
 	
@@ -73,18 +82,17 @@ class Bot:
 			if len(cells) > 0:
 				if cells[1].text == self.conta_contrato or self.conta_contrato is None:
 					cells[0].find_element(By.TAG_NAME, 'input').click()
-					break
+					return
+		raise ValueError('Contrato não encontrado.')
 	
 	def select_option(self):
 		self.wait.until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'dfwp-item')))
 		self.driver.get('https://servicos.neoenergiapernambuco.com.br/servicos-ao-cliente/Pages/2-via-conta_anti.aspx')
 	
-	def download_pdf(self):
+	def acess_pdf(self):
 		self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, 'iframe')))
 		iframe = self.driver.find_element(By.CSS_SELECTOR, "div#ctl00_m_g_df32160e_0cad_4a26_927a_6186cce39149 iframe")
 
-
-		print(iframe)
 		self.driver.switch_to.frame(iframe)
 		img_element = self.wait.until(
     		EC.presence_of_element_located((By.CSS_SELECTOR, "img.tipViaPgto"))
@@ -96,22 +104,19 @@ class Bot:
 		tabs = self.driver.window_handles
 		self.driver.switch_to.window(tabs[-1])
 
-		# self.wait.until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'neoNNtab00')))
-		# trs = self.driver.find_elements(By.TAG_NAME, 'tr')
-		# for tr in trs:
-		# 	print(tr.text)
 		input_element = WebDriverWait(self.driver, 10).until(
     		EC.element_to_be_clickable((By.XPATH, "//table[@class='neoNNtab00']//tr[last()]/td/input[@id='btn_naofaturamao']"))
 		)
 		input_element.click()
-		# trs[-1].find_element(By.CSS_SELECTOR, "td > input#btn_naofaturamao").click()
-		pass
+		sleep(5)
 		
-	def second_bill_copy(self):
+	def second_bill_copy(self):		
 		self.login()
 		self.find_contract()
 		self.select_option()
-		self.download_pdf()
+		self.acess_pdf()
+
+		self.driver.quit()
 
 
 bot = Bot(config('CPF_CNPJ'), config('PASSWORD'), conta_contrato=config('CONTA_CONTRATO'))
