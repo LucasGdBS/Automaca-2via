@@ -39,3 +39,6 @@ A 2ª Via do boleto irá para a pasta "downloads" na raiz do projeto
 ## Observações
 
 - Para o script funcionar corretamente, é necessário ter na sua maquina o Chrome WebDriver
+
+## Vídeo exemplo
+[Assista aqui!](https://www.youtube.com/watch?v=WR_j50sL0us)
