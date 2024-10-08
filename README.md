@@ -1,12 +1,12 @@
-# Desafio Cogni
+# Automacao-2via
 
 ## Descrição
 
-O desafio da Cogni consiste em criar uma solução para baixar segunda via de faturas de energia (boleto pdf/xml) do portal da sua concessionária local. No meu caso, a concessionária é a [Neoenergia Pernambuco](https://servicos.neoenergiapernambuco.com.br/Pages/todos-os-servicos.aspx).
+O projeto consiste em criar uma solução para baixar segunda via de faturas de energia (boleto pdf/xml) do portal da [Neoenergia Pernambuco](https://servicos.neoenergiapernambuco.com.br/Pages/todos-os-servicos.aspx).
 
 ## Solução
 
-Para resolver o desafio, criei um script em Python que acessa o portal da Neoenergia Pernambuco, preenche o formulário de segunda via de fatura com os dados do cliente e baixa o boleto em formato PDF.
+Criei um script em Python que acessa o portal da Neoenergia Pernambuco, preenche o formulário de segunda via de fatura com os dados do cliente e baixa o boleto em formato PDF.
 
 Para isso, utilizei a biblioteca [Selenium](https://selenium-python.readthedocs.io/) para automatizar o navegador
 
